@@ -1,0 +1,23 @@
+* {
+  box-sizing: border-box;
+}
+
+.app {
+  margin: 100px 100px 0 100px;
+}
+
+.indent_b_s {
+  margin-bottom: 10px;
+}
+
+.tag {
+  margin: 3px;
+}
+
+.input.is-inline-block {
+  width: 60px;
+}
+
+.pullTild {
+  vertical-align: middle;
+}

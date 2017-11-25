@@ -1,0 +1,52 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <title>Todo.js</title>
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/bulma.css">
+        <link rel="stylesheet" href="css/app.css">
+    </head>
+
+    <body>
+
+      <div class="columns app">
+
+        <div id="client" class="column is-two-thirds">
+          <div class="indent_b_s">
+            <input class="input is-inline-block" id="pushAmountInput" type="text" placeholder="10" type="number" value="10">
+            <button id="pushBtn" class="button is-primary is-inline-block">
+              Сгенерировать ID
+            </button>
+          </div>
+          <div id="clientBox" class="box">
+
+          </div>
+        </div>
+
+        <div id="server" class="column">
+            <div class="indent_b_s">
+              <span class="pullTild">~</span>
+              <input class="input is-inline-block" id="pullAmountInput" type="text" placeholder="Text input" type="number" value="5">
+              <button id="pullBtn" class="button is-primary is-inline-block" disabled>
+                Запушить ID
+              </button>
+            </div>
+
+            <h3 class="title is-5">Запушенные ID</h3>
+            <div id="pullBox" class="box">
+
+            </div>
+
+            <h3 class="title is-5">Не найдено</h3>
+            <div id="affectedBox" class="box">
+
+            </div>
+        </div>
+      </div>
+
+
+        <script src="./app.js"></script>
+    </body>
+</html>
