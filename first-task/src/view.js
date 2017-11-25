@@ -34,14 +34,8 @@ class View extends EventEmitter {
       'is-danger',
     ];
 
-    // Привязка @method pushBtnStateWatcher
-    this.pushBtnStateWatcher = this.pushBtnStateWatcher.bind(this);
-
-    // Внутрение взаимодействия
-    this.on('newOperation', this.pushBtnStateWatcher);
-    this.on('preparePush', this.preparePush);
-
-    // Иницилизация слушателей
+    this.pushBtnDisabledToggle = this.pushBtnDisabledToggle.bind(this);
+    this.on('newOperation', this.pushBtnDisabledToggle);
     this.initListeners();
   }
 
@@ -93,8 +87,8 @@ class View extends EventEmitter {
    * @static appendToFragment - Вспомогательный метод добавления DOM элементов
    * к фрагменту
    *
-   * @param  {DocumentFragment} fragment Фрагмент
-   * @param  {DOMNode[]}        elems    Дом элементы
+   * @param  {DocumentFragment}   fragment Фрагмент
+   * @param  {DOMNode[]}          elems    Дом элементы
    * @returns {DocumentFragment}
    */
   static appendToFragment(fragment, elems) {
@@ -109,7 +103,7 @@ class View extends EventEmitter {
   /**
    * generateIDElements - Генерация дом элементов на основе массива
    *
-   * @param  {String[]} arr Исходный массив айдишников
+   * @param  {String[]}   arr Исходный массив айдишников
    * @return {DOMNode[]}
    */
   generateIDElements(arr) {
@@ -124,17 +118,18 @@ class View extends EventEmitter {
   /**
    * pullIds - "Спуливание" айтемов с основного бокса
    *
-   * @param  {Object} differences                Объект с разницами
-   * @param  {String[]} differences.leftDiff     Новое состояние модели
-   * @param  {String[]} differences.affectedDiff "Аффекты" или не найденные айдишники
+   * @param  {Object}   data             Объект с данными
+   * @param  {String[]} data.pullIDs     Новое состояние запуленных айдишников
+   * @param  {String[]} data.pushIDs     Новое состояние запушенных айдишников
+   * @param  {String[]} data.notFound    Айдишники которые не были найдены в состоянии
    * @fires this#setPullItems
-   * @fires this#setAffectedItems
+   * @fires this#setNotFoundItems
    * @fires this#emit
    */
-  pullIds(differences) {
-    this.setPullItems(differences.leftDiff);
-    this.setAffectedItems(differences.affectedDiff);
-    this.emit('newOperation', !!differences.leftDiff.length);
+  pullIds(data) {
+    this.setPullItems(data.pullIDs);
+    this.setNotFoundItems(data.notFound);
+    this.emit('newOperation', !!data.pushIDs.length);
   }
 
 
@@ -144,7 +139,7 @@ class View extends EventEmitter {
    * @param  {String[]} arr Исходный массив
    */
   setPullItems(arr) {
-    const idElems = this.tags.filter(tag => arr.indexOf(tag.id) === -1);
+    const idElems = this.tags.filter(tag => arr.indexOf(tag.id) !== -1);
     const fragment = View.appendToFragment(document.createDocumentFragment(), idElems);
 
     this.pullBox.appendChild(fragment);
@@ -152,11 +147,11 @@ class View extends EventEmitter {
 
 
   /**
-   * setAffectedItems - Метод вставляет "Заафекченные" айтемы в блок "Не найдено"
+   * setNotFoundItems - Метод вставляет id которые не были найдены
    *
-   * @param  {String[]} arr Исходый массив
+   * @param  {String[]} arr Исходый массив с не найденными id
    */
-  setAffectedItems(arr) {
+  setNotFoundItems(arr) {
     const idElems = this.generateIDElements(arr);
     const fragment = View.appendToFragment(document.createDocumentFragment(), idElems);
 
@@ -175,11 +170,11 @@ class View extends EventEmitter {
   }
 
   /**
-   * pushBtnStateWatcher - Слежение за состоянием пуш кнопки
+   * pushBtnDisabledToggle - Переключение состояни пуш кнопки
    *
-   * @param  {Boolean} condition Флаг для пере
+   * @param  {Boolean} condition Флаг для манипуляции над кнопкной
    */
-  pushBtnStateWatcher(condition) {
+  pushBtnDisabledToggle(condition) {
     if (condition) {
       return this.pullBtn.removeAttribute('disabled');
     }

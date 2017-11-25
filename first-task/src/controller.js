@@ -21,21 +21,22 @@ class Controller {
   /**
    * pushIDs - Метод для добавления айдишников
    *
-   * @param  {number} val Необходимое количество
+   * @param  {number}     val Необходимое количество
    * @fires view#pushIDs
    */
   pushIDs(val) {
     const amount = parseInt(val, 10);
-    const randomIds = IDGenerator.generateNewArr(amount);
+    const newIDs = IDGenerator.generateNewArr(amount);
+    const pushIDs = this.model.pushIDs.concat(newIDs);
 
-    this.model.state = randomIds;
-    this.view.pushIDs(randomIds);
+    this.model.updateState({ pushIDs });
+    this.view.pushIDs(newIDs);
   }
 
   /**
    * pullIDs - "Спулить айдишники" имеется ввиду вытащить
    *
-   * @param  {number} val Необходимое количество
+   * @param  {number}     val Необходимое количество
    * @fires view#pullIds
    */
   pullIDs(val) {
@@ -43,15 +44,15 @@ class Controller {
 
     // Генериурем "Аффекты", не существующие айдишники
     const affectedIds = IDGenerator.generateNewArr(amount);
-    const randomAffected = IDGenerator.generateRandoms(affectedIds, 4);
+    const randomAffected = IDGenerator.generateRandoms(affectedIds, 2);
 
     // Генериурем рандомное число айдишников из уже существующих
-    const modelState = this.model.state;
-    const randomsOfModel = IDGenerator.generateRandoms(modelState, amount);
+    const modelPushIDs = this.model.pushIDs;
+    const randomsOfModel = IDGenerator.generateRandoms(modelPushIDs, amount);
 
-    // Слаживает результаты и отправляем высчитать результат
+    // Складываем результаты и отдаем модели посчитать разницы
     const concated = randomAffected.concat(randomsOfModel);
-    const result = this.model.setDifference(concated);
+    const result = this.model.calculateDiff(concated);
 
     // Закидываем результат во вью
     this.view.pullIds(result);

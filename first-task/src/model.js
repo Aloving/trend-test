@@ -6,43 +6,65 @@ import {
 /**
  * Model - Базовый класс модели
  *
- * @param  {Array} state = [] Стартовое состояние модели
+ * @param  {Array} pushIDs = []
  */
 class Model extends EventEmitter {
-  constructor(state = []) {
+  constructor(pushIDs = []) {
     super();
 
-    this.localState = state;
-  }
+    /**
+     * Запушенные ID'шники (сгенерированные)
+     *
+     * @type {String[]}
+     */
+    this.pushIDs = pushIDs;
 
-  get state() {
-    return this.localState;
-  }
-
-  set state(state) {
-    this.localState = state;
+    /**
+     * Массив запуленных айдишников
+     *
+     * @type {String[]}
+     */
+    this.pullIDs = [];
   }
 
   /**
-   * setDifference - Вставить разницу
-   * Метод ищет разницу между настоящим состоянием и входящим массивом
-   * И записывает эту разницу как новое состояние
+   * updateState - Обновление состояние модели
+   *
+   * @param  {Object} data      Информарция об объявлении где
+   * @param  {String} data[key] Поле которое нужно обновить
+   * @param  {any}    data[val] Значение которое нужно присвоить
+   */
+  updateState(data) {
+    Object.keys(data).forEach((key) => {
+      this[key] = data[key];
+    });
+  }
+
+  /**
+   * calculateDiff - Расчитать новую разницу
    *
    * @param  {String[]} arr Входящий массив относительно которого будет искаться разница
-   * @return {Object}       data Объект с информацией о разницах
-   * @return {String[]}     data.leftDiff Новое состояние которое является разницой
-   * от настоящего состояния и входящего массива
-   * @return {String[]}    data.affectedDiff Массив с айдишниками которые не присуствуют в состоянии
    *
+   * @return {Object}       data Объект с информацией о разницах
+   * @return {String[]}     data.pushIDs Новое состояние поля {this.pushIds}
+   * @return {String[]}     data.pullIDs Новое состояние поля {this.pullIDs}
+   * @return {String[]}     data.notFound Айдишники который не были найдены
    */
-  setDifference(arr) {
-    const leftDiff = Difference.left(this.state, arr);
-    const affectedDiff = Difference.right(Difference.left(this.state, leftDiff), arr);
-    this.localState = leftDiff;
+  calculateDiff(arr) {
+    const pushIDs = Difference.left(this.pushIDs, arr);
+    const concurrences = Difference.left(this.pushIDs, pushIDs);
+    const notFound = Difference.right(concurrences, arr);
+    const pullIDs = this.pullIDs.concat(concurrences);
+
+    this.updateState({
+      pullIDs,
+      pushIDs,
+    });
 
     return {
-      leftDiff,
-      affectedDiff,
+      pushIDs,
+      notFound,
+      pullIDs,
     };
   }
 }
