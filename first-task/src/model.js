@@ -56,11 +56,6 @@ class Model extends EventEmitter {
     const notFound = Difference.right(concurrences, arr);
     const pullIDs = this.pullIDs.concat(concurrences);
 
-    this.updateState({
-      pullIDs,
-      pushIDs,
-    });
-
     return {
       pushIDs,
       notFound,

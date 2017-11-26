@@ -54,6 +54,12 @@ class Controller {
     const concated = randomAffected.concat(randomsOfModel);
     const result = this.model.calculateDiff(concated);
 
+    // Обновляем состояние модели
+    this.model.updateState({
+      pullIDs: result.pullIDs,
+      pushIDs: result.pushIDs,
+    });
+
     // Закидываем результат во вью
     this.view.pullIds(result);
   }
