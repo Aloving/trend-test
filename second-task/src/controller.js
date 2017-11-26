@@ -17,7 +17,10 @@ class Controller {
 
     // this.onSearch = this.onSearch.bind(this);
     this.onSearch = debounce(this.onSearch.bind(this), 250);
+    this.sortByPlan = this.sortByPlan.bind(this);
+
     this.view.on('search', this.onSearch);
+    this.view.on('sortByPlan', this.sortByPlan);
 
     /**
      * Последний поисковый запрос
@@ -25,6 +28,29 @@ class Controller {
      * @type {?String}
      */
     this.lastRequest = null;
+
+    /**
+     * Флаг указывающий на состояние сортировки поля "План" вью
+     *
+     * @type {?String}
+     */
+    this.sorted = null;
+  }
+
+  /**
+   * sortByPlan - Провести сортировку по полю "План"
+   *
+   * @param  {type} direction В каком порядке сортировать
+   * @fires  view#sort
+   */
+  sortByPlan(direction) {
+    if (this.sorted === direction) {
+      return;
+    }
+
+    const sortedModel = this.model.sortByPlan(direction);
+    this.view.sort(sortedModel, direction);
+    this.sorted = direction;
   }
 
   /**

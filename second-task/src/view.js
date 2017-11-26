@@ -12,8 +12,12 @@ class View extends EventEmitter {
     // DOM Элементы
     this.tableBody = document.getElementById('tableBody');
     this.search = document.getElementById('search');
+    this.descBtn = document.getElementById('desc');
+    this.ascBtn = document.getElementById('asc');
 
     this.search.addEventListener('keyup', e => this.emit('search', e));
+    this.ascBtn.addEventListener('click', () => this.emit('sortByPlan', 'asc'));
+    this.descBtn.addEventListener('click', () => this.emit('sortByPlan', 'desc'));
 
     this.tableItems = [];
     this.addItems(state);
@@ -71,6 +75,39 @@ class View extends EventEmitter {
     return row;
   }
 
+  /**
+   * sort - Отсортировать DOM элементы по массиву
+   *
+   * @param  {type} arr Массив с айдишниками
+   */
+  sort(arr, operationId) {
+    const fragment = document.createDocumentFragment();
+
+    arr.forEach((id) => {
+      fragment.appendChild(this.tableItems.find(item => item.id === id && item));
+    });
+
+    this.tableBody.appendChild(fragment);
+    this.toggleSortBtns(operationId);
+  }
+
+  /**
+   * toggleSortBtns - Переключение состояний кнопок сортировки
+   *
+   * @param  {type} operationId description
+   * @return {type}             description
+   */
+  toggleSortBtns(operationId) {
+    if (operationId === 'desc') {
+      this.descBtn.classList.remove('is-outlined');
+      this.ascBtn.classList.add('is-outlined');
+    }
+
+    if (operationId === 'asc') {
+      this.ascBtn.classList.remove('is-outlined');
+      this.descBtn.classList.add('is-outlined');
+    }
+  }
 
   /**
    * filter - Фильтрация по DOM элементам
